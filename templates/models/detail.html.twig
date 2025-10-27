@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ model.title }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <img src="{{ model.image }}" alt="{{ model.title }}" class="model-image">
+
+        <div class="model-detail">
+            <h1>{{ model.title }}</h1>
+
+            <div class="model-description">
+                <p>{{ model.description }}</p>
+            </div>
+
+            {% if model.credits|length > 0 %}
+                <div class="credits">
+                    <h2>Credits</h2>
+                    <div>
+                        {% for credit in model.credits %}
+                            <strong>{{ credit.type }}:</strong> {{ credit.name }}
+                            <div class="links">
+                                {% for link in credit.links %}
+                                    <div class="link">[{{ link.type }}: {{ link.identifier }}]</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <a href="{{ path('overview') }}">← Back to Overview</a>
+    </div>
+{% endblock %}

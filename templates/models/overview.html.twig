@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Momoko's Latotos{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Momoko's Latotos</h1>
+
+        <div class="models-overview">
+            {% for model in models %}
+                <div class="model">
+                    <div class="portrait">{{ model.image }}</div>
+                    <div class="title">{{ model.title }}</div>
+                    <div class="credits">
+                        {% for credit in model.credits %}
+                            <div class="credit-type">{{ credit.type }}</div>
+                            <div class="credit-name">{{ credit.name }}</div>
+                            <div class="links">
+                                {% for link in credit.links %}
+                                    <div class="link">{{ link.type }}: {{ link.identifier }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
