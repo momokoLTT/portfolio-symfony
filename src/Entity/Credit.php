@@ -22,8 +22,7 @@ class Credit
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
-    #[ORM\ManyToOne(targetEntity: Link::class)]
-    #[ORM\JoinColumn(name: 'link_id', referencedColumnName: 'id')]
+    #[ORM\OneToMany(targetEntity: Link::class, mappedBy: 'credit', cascade: ['persist', 'remove'])]
     private Collection $links;
 
     #[ORM\ManyToMany(targetEntity: Model::class, mappedBy: 'credits')]

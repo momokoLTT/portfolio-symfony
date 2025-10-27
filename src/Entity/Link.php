@@ -20,6 +20,10 @@ class Link
     #[ORM\Column(type: 'string', length: 255)]
     private string $identifier;
 
+    #[ORM\ManyToOne(targetEntity: Credit::class, inversedBy: 'links')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Credit $credit = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -45,6 +49,18 @@ class Link
     public function setIdentifier(string $identifier): self
     {
         $this->identifier = $identifier;
+
+        return $this;
+    }
+
+    public function getCredit(): ?Credit
+    {
+        return $this->credit;
+    }
+
+    public function setCredit(?Credit $credit): self
+    {
+        $this->credit = $credit;
 
         return $this;
     }

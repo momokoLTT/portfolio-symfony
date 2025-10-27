@@ -89,18 +89,18 @@ class Model
         return $this->credits;
     }
 
-    public function addCredit(Credit $supplier): self
+    public function addCredit(Credit $credit): self
     {
-        if (!$this->credits->contains($supplier)) {
-            $this->credits->add($supplier);
+        if (!$this->credits->contains($credit)) {
+            $this->credits->add($credit);
         }
 
         return $this;
     }
 
-    public function removeCredit(Credit $supplier): self
+    public function removeCredit(Credit $credit): self
     {
-        $this->credits->removeElement($supplier);
+        $this->credits->removeElement($credit);
 
         return $this;
     }
