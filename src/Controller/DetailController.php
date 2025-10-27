@@ -14,9 +14,9 @@ class DetailController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'detail')]
-    public function index()
+    public function index(string $slug)
     {
-        $entity = $this->em->getRepository(Model::class)->findOneBy(['id' => $this->getParameter('slug')]);
+        $entity = $this->em->getRepository(Model::class)->findOneBy(['id' => $slug]);
         if (!$entity instanceof Model) {
             return $this->redirectToRoute('overview');
         }
