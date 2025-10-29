@@ -3,33 +3,144 @@
 {% block title %}{{ model.title }}{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <img src="{{ model.image }}" alt="{{ model.title }}" class="model-image">
+    {% set images = ['none.jpg', 'none.jpg'] %}
+    <header id="home">
+        <h1>Momoko's Latotos</h1>
+    </header>
 
-        <div class="model-detail">
-            <h1>{{ model.title }}</h1>
+    <nav>
+        <a href="{{ path('overview') }}" style="padding-left: 3%">← Back to Overview</a>
+    </nav>
 
-            <div class="model-description">
-                <p>{{ model.description }}</p>
-            </div>
-
-            {% if model.credits|length > 0 %}
-                <div class="credits">
-                    <h2>Credits</h2>
-                    <div>
-                        {% for credit in model.credits %}
-                            <strong>{{ credit.type }}:</strong> {{ credit.name }}
-                            <div class="links">
-                                {% for link in credit.links %}
-                                    <div class="link">[{{ link.type }}: {{ link.identifier }}]</div>
+    <main class="container">
+        <section class="content-section small" id="details">
+            <h2>{{ model.title }}</h2>
+            <section class="content-section-half" id="details-image">
+                {% if model.image is empty %}
+                {# TODO: load placeholder "no image found" image #}
+                <h2>[image of model]</h2>
+                {% elseif model.image|length == 1 or model.image is not iterable %}
+                    <img src="{{ asset('images/' ~ model.image) }}" alt="{{ model.title }}" class="detail-image">
+                {% else %}
+                    <div class="image-carousel">
+                        <div class="carousel-images">
+                            {% for image in model.image %}
+                                <img src="{{ asset('images/' ~ image) }}" alt="{{ model.title }}" class="detail-image {% if loop.first %}active{% endif %}">
+                            {% endfor %}
+                        </div>
+                        {% if model.image|length > 1 %}
+                            <button class="carousel-btn carousel-prev" aria-label="Previous image">‹</button>
+                            <button class="carousel-btn carousel-next" aria-label="Next image">›</button>
+                            <div class="carousel-indicators">
+                                {% for image in model.image %}
+                                    <span class="indicator {% if loop.first %}active{% endif %}" data-index="{{ loop.index0 }}"></span>
                                 {% endfor %}
                             </div>
-                        {% endfor %}
+                        {% endif %}
                     </div>
-                </div>
-            {% endif %}
-        </div>
+                {% endif %}
+            </section>
+            <section class="content-section-half" id="details-content">
+                <div class="collapsible-container">
+                    <details open>
+                        <summary class="h3">Description</summary>
+                        <div class="model-description">
+                            <p>{{ model.description }}</p>
+                        </div>
+                    </details>
 
-        <a href="{{ path('overview') }}">← Back to Overview</a>
-    </div>
+                    {% if model.credits|length > 0 %}
+                        <details>
+                            <summary class="h3">Credits</summary>
+                            <div class="credits">
+                                {% for credit in model.credits %}
+                                    <div class="credit-item">
+                                        <strong>{{ credit.type }}:</strong> {{ credit.name }}
+                                        {% if credit.links|length > 0 %}
+                                            {% for link in credit.links %}
+                                                <a href="{{ link.identifier }}" target="_blank" class="credit-link" title="{{ link.type }}">
+                                                    🔗
+                                                </a>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </details>
+                    {% endif %}
+                </div>
+            </section>
+        </section>
+    </main>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousels = document.querySelectorAll('.image-carousel');
+            
+            carousels.forEach(carousel => {
+                const images = carousel.querySelectorAll('.carousel-images img');
+                const indicators = carousel.querySelectorAll('.indicator');
+                const prevBtn = carousel.querySelector('.carousel-prev');
+                const nextBtn = carousel.querySelector('.carousel-next');
+                let currentIndex = 0;
+
+                function showImage(index) {
+                    images.forEach(img => img.classList.remove('active'));
+                    indicators.forEach(ind => ind.classList.remove('active'));
+                    
+                    images[index].classList.add('active');
+                    indicators[index].classList.add('active');
+                    currentIndex = index;
+                }
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', () => {
+                        const newIndex = (currentIndex - 1 + images.length) % images.length;
+                        showImage(newIndex);
+                    });
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => {
+                        const newIndex = (currentIndex + 1) % images.length;
+                        showImage(newIndex);
+                    });
+                }
+
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        showImage(index);
+                    });
+                });
+
+                // Touch/swipe support
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                carousel.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
+
+                carousel.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                });
+
+                function handleSwipe() {
+                    if (touchEndX < touchStartX - 50) {
+                        // Swipe left - next image
+                        const newIndex = (currentIndex + 1) % images.length;
+                        showImage(newIndex);
+                    }
+                    if (touchEndX > touchStartX + 50) {
+                        // Swipe right - previous image
+                        const newIndex = (currentIndex - 1 + images.length) % images.length;
+                        showImage(newIndex);
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
