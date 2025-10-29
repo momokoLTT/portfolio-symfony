@@ -75,6 +75,7 @@ class Credit
     {
         if (!$this->links->contains($link)) {
             $this->links->add($link);
+            $link->setCredit($this);
         }
 
         return $this;

@@ -2,62 +2,76 @@
 
 namespace App\DataFixtures;
 
+use App\Data\CreditType;
+use App\Data\LinkType;
 use App\Entity\Credit;
 use App\Entity\Link;
 use App\Entity\Model;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+use Faker\Generator;
 
 class ModelFixtures extends Fixture
 {
+    private Generator $faker;
+
     public function load(ObjectManager $manager): void
     {
-        $model = new Model()
-            ->setId('dummy')
-            ->setTitle('Dummy')
-            ->setDescription('A generated dummy model')
-            ->setImage('dummy.jpg')
-            ->setCredits($this->generateCredits($manager));
+        $this->faker = Factory::create();
 
-        $manager->persist($model);
+        for ($i = 0; $i < 10; ++$i) {
+            $model = new Model()
+                ->setId('testModel' . $i)
+                ->setTitle($this->faker->jobTitle)
+                ->setDescription($this->faker->paragraph(2))
+                ->setImage('none.jpg')
+                ->setCredits($this->generateCredits($manager));
+
+            $manager->persist($model);
+        }
+
         $manager->flush();
     }
 
     private function generateCredits(ObjectManager $manager): array
     {
-        $designers = [
-            new Credit()
-                ->setType('designer')
-                ->setName('designer')
-                ->addLink(
-                    new Link()->setType('Twitter/X')->setIdentifier('@designer')
-                ),
-        ];
-        $artists = [
-            new Credit()
-                ->setType('artist')
-                ->setName('artist')
-                ->addLink(new link()->setType('bluesky')->setIdentifier('@designer')),
-            new Credit()
-                ->setType('artist')
-                ->setName('other artist')
-                ->addLink(new Link()->setType('Pixiv')->setIdentifier('5123753'))
-        ];
-        $riggers = [
-            new Credit()
-                ->setType('rigger')
-                ->setName('rigger')
-                ->addLink(new LINK()->setType('twitter/x')->setIdentifier('@rigger'))
-                ->addLink(new link()->setType('bluesky')->setIdentifier('@rigger'))
-        ];
+        $credits = [];
 
-        $all = array_merge($designers, $artists, $riggers);
-        foreach ($all as $each) {
-            $manager->persist($each);
+        foreach (CreditType::values() as $type) {
+            $amountToGenerate = random_int(1, 2);
+            for ($i = 0; $i < $amountToGenerate; $i++) {
+                $credit = $this->generateCredit($type);
+                $manager->persist($credit);
+                $credits[] = $credit;
+            }
         }
 
         $manager->flush();
 
-        return $all;
+        return $credits;
+    }
+
+    private function generateCredit(string $type): Credit
+    {
+        $links = [];
+        $linksToGenerate = random_int(1, 5);
+        for ($i = 0; $i < $linksToGenerate; $i++) {
+            $links[] = $this->generateLink();
+        }
+
+        $credit = new Credit()->setType($type)->setName($this->faker->firstName);
+        foreach ($links as $link) {
+            $credit->addLink($link);
+        }
+
+        return $credit;
+    }
+
+    private function generateLink(): Link
+    {
+        return new Link()
+            ->setType(LinkType::values()[array_rand(LinkType::values())])
+            ->setIdentifier($this->faker->userName);
     }
 }
