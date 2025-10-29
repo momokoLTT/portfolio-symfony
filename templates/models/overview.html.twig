@@ -3,27 +3,95 @@
 {% block title %}Momoko's Latotos{% endblock %}
 
 {% block body %}
-    <div class="container">
+    <header id="home">
         <h1>Momoko's Latotos</h1>
+    </header>
 
-        <div class="models-overview">
-            {% for model in models %}
-                <div class="model">
-                    <div class="portrait">{{ model.image }}</div>
-                    <div class="title">{{ model.title }}</div>
-                    <div class="credits">
-                        {% for credit in model.credits %}
-                            <div class="credit-type">{{ credit.type }}</div>
-                            <div class="credit-name">{{ credit.name }}</div>
-                            <div class="links">
-                                {% for link in credit.links %}
-                                    <div class="link">{{ link.type }}: {{ link.identifier }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#models">Latotos</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="content-section" id="about">
+            <h2>About Momoko's Latotos</h2>
+            <section class="content-section-half" id="about-website">
+                <h3>The Website</h3>
+                <p>Welcome to Momoko's Latotos, an archive of all the vtuber models or outfits Momoko has used on
+                    stream, along with credits to the creators and some information on each model.</p>
+                <p>Each model or outfit has its own info page containing more details about them. <br>
+                    We also have a page with all the vtuber parents.</p>
+            </section>
+            <section class="content-section-half" id="about-momoko">
+                <h3>Who is Momoko?</h3>
+                <p>Momoko is a Dutch vtuber who started streaming in 2023. She is a small content creator who mainly
+                    plays story-driven games and (badly) voice acts them. She's fond of deduction games and
+                    soulslikes.</p>
+
+                <h3>What does the LTT stand for?</h3>
+                <p>In lore, the LTT stands for Latoto; the place Momoko comes from.</p>
+                <p>In reality, LTT and Latoto have no real meaning. <br>
+                    On this website it is used to refer to the models Momoko uses.</p>
+                <p>Viewers are encouraged to think of other meanings for LTT.</p>
+            </section>
+
+            <section id="socials">
+                <h2>Momoko's Socials</h2>
+                {# TODO: Twitter #}
+                {# TODO: Youtube #}
+                {# TODO: Twitch #}
+                [under construction]
+            </section>
+        </section>
+
+        <section class="content-section" id="models">
+            <h2>Momoko's Latotos</h2>
+            <div class="grid">
+                {% for model in models %}
+                    <div class="card">
+                        <h3 class="card-title">{{ model.title }}</h3>
+                        <div class="card-image-container">
+                            <img src="{{ asset('images/' ~ model.image) }}" alt="{{ model.title }}" class="card-image">
+                        </div>
+                        <p class="card-description">{{ model.description }}</p>
+                        <div class="card-footer">
+                            {% if model.credits|length > 0 %}
+                                <div class="card-info-trigger">
+                                    <span class="info-icon">Credits</span>
+                                    <div class="card-hover-panel">
+                                        <h4>Credits</h4>
+                                        {% for credit in model.credits %}
+                                            <div class="credit-item">
+                                                <span class="credit-type">{{ credit.type }}:</span> {{ credit.name }}
+                                                {% if credit.links|length > 0 %}
+                                                    <div class="links">
+                                                        {% for link in credit.links %}
+                                                            <span class="link-badge">{{ link.type }}: {{ link.identifier }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <a href="/{{ model.id }}" class="card-button">View Details</a>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+                {% else %}
+                    <div class="card">
+                        <h3>No Models Available</h3>
+                        <p>There are currently no models to display.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; {{ "now"|date("Y") }} - Made by MomokoLTT herself uwu</p>
+    </footer>
 {% endblock %}
