@@ -10,6 +10,9 @@ enum LinkType: string
     case TWITCH = 'twitch';
     case YOUTUBE = 'youtube';
     case VGEN = 'vgen';
+    case INSTAGRAM = 'instagram';
+    case EMAIL = 'email';
+    case WEBSITE = 'website';
 
     public static function values(): array
     {
@@ -20,6 +23,9 @@ enum LinkType: string
             self::TWITCH->value,
             self::YOUTUBE->value,
             self::VGEN->value,
+            self::INSTAGRAM->value,
+            self::EMAIL->value,
+            self::WEBSITE->value,
         ];
     }
 
@@ -32,6 +38,8 @@ enum LinkType: string
             self::TWITCH => 'https://twitch.tv/%s',
             self::YOUTUBE => 'https://youtube.com/%s',
             self::VGEN => 'https://vgen.co/%s',
+            self::INSTAGRAM => 'https://instagram.com/%s',
+            default => '%s',
         };
     }
 }
